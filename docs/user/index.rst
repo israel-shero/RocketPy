@@ -1,16 +1,54 @@
-Welcome to RocketPy's user documentation!
-=========================================
+RocketPy's User Guide
+=====================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-   
-   requirements.rst
-   installation.rst
-   ../notebooks/getting_started.ipynb
-   ../notebooks/environment_class_usage.ipynb
-   ../notebooks/environment_analysis_class_usage.ipynb
-   ../notebooks/dispersion_analysis/dispersion_analysis.ipynb
-   ../notebooks/utilities_usage.ipynb
+   :caption: Getting Started
+
+   Installation and Requirements <installation.rst>
+   First Simulation <first_simulation.rst>
+   3 DOF Simulations and Comparison <three_dof_simulation.rst>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Main Classes Usage
+
+   Positions and Coordinate Systems <positions.rst>
+   Motors <motors/motors.rst>
+   Rocket <rocket/rocket.rst>
+   Environment <environment.rst>
+   Flight <flight.rst>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Special Case Simulations
+
+   Compare Flights Class<compare_flights.rst>
+   Flight Comparator Class <flight_comparator.rst>
+   Parachute Triggers (Acceleration-Based) <parachute_triggers.rst>
+   Deployable Payload <deployable.rst>
+   Controllers <controllers.rst>
+   Air Brakes Example <airbrakes.rst>
+   ../notebooks/sensors.ipynb
    ../matlab/matlab.rst
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Monte Carlo Simulations
+
+   Stochastic Classes <stochastic.rst>
+   Custom Sampler <custom_sampler.rst>
+   ../notebooks/monte_carlo_analysis/monte_carlo_class_usage.ipynb
+   ../notebooks/monte_carlo_analysis/monte_carlo_analysis.ipynb
+   ../notebooks/monte_carlo_analysis/parachute_drop_from_helicopter.ipynb
+   Sensitivity Analysis <sensitivity.rst>
+   Multivariate Rejection Sampler <mrs.rst>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Further Analysis
+
+   Function <function.rst>
+   Utilities <analysis.rst>
+   Aerodynamic Surfaces <aerodynamics/surfaces.rst>
+   Logging <logging.rst>

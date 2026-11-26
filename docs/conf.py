@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -13,18 +15,19 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../"))
-
+package_path = os.path.abspath("../")
+sys.path.insert(0, package_path)
+os.environ["PYTHONPATH"] = ":".join((package_path, os.environ.get("PYTHONPATH", "")))
 
 # -- Project information -----------------------------------------------------
 
 project = "RocketPy"
-copyright = "2020, RocketPy Team"
+copyright = "2026, RocketPy Team"
 
-author = "Giovani Hidalgo Ceotto"
+author = "RocketPy Team"
 
 # The full version, including alpha/beta/rc tags
-release = "0.11.0"
+release = "1.13.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,22 +39,74 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
+    "sphinx_tabs.tabs",
+    "sphinx_copybutton",
+    "sphinx_design",
+    "jupyter_sphinx",
     "nbsphinx",
-    "m2r2",
 ]
 
-# source_suffix = '.rst'
-# source_suffix = ['.rst', '.md']
+
+# Compatibility: https://about.readthedocs.com/blog/2024/07/addons-by-default/
+## Define the canonical URL if you are using a custom domain on Read the Docs
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
+## Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    if "html_context" not in globals():
+        html_context = {}
+    html_context["READTHEDOCS"] = True
 
 # Don't run notebooks
 nbsphinx_execute = "never"
 
+# Configure jupyter_sphinx execution behavior
+jupyter_execute_kwargs = {
+    "timeout": 300,  # 5 minutes timeout per cell
+    "allow_errors": True,  # Continue building even if cells raise errors
+}
+
+# When DOCS_SKIP_EXECUTE=1, ``jupyter-execute`` directives are rendered as
+# static (non-executing) code blocks instead of running live code. This makes
+# structural doc builds fast and deterministic (no simulations, no network),
+# which is what the GitHub Actions docs check relies on. Read the Docs leaves
+# this unset, so it still executes the cells and renders their live outputs.
+skip_jupyter_execute = os.environ.get("DOCS_SKIP_EXECUTE") == "1"
+
+# Some notebook cells use IPython shell escapes (e.g. ``!pip install rocketpy``)
+# which the Pygments Python lexer cannot tokenize. These are purely cosmetic
+# syntax-highlighting failures, so don't let them fail a warnings-as-errors build.
+suppress_warnings = ["misc.highlighting_failure"]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
+# Napoleon settings
 napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_admonition_for_notes = True
+napoleon_use_admonition_for_references = True
+napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_preprocess_types = True
+
 autodoc_member_order = "bysource"
-autoclass_content = "both"
+autoclass_content = "class"
+
+# -- Options for autodoc ----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+
+# Automatically extract type hints when specified and place them in
+# descriptions of the relevant function/method.
+autodoc_typehints = "description"
+
+# Don't show class signature with the class' name.
+autodoc_class_signature = "separated"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -65,29 +120,88 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
+numfig = True
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["static"]
-html_css_files = ["notebooks.css"]
-html_logo = "static/RocketPy_Logo_Black.svg"
+html_css_files = ["rocketpy.css"]
 html_favicon = "static/favicon.ico"
-html_theme_options = {
-    "logo_link": "index",
-    "github_url": "https://github.com/Projeto-Jupiter/RocketPy",
-    "collapse_navigation": True,
-    "show_toc_level": 3,
-}
 
 html_sidebars = {
     "**": ["search-field.html", "sidebar-nav-bs.html", "sidebar-ethical-ads.html"]
 }
-html_theme_options = {"navbar_end": ["navbar-icon-links.html", "search-field.html"]}
-
+html_theme_options = {
+    "logo": {
+        "image_light": "static/RocketPy_Logo_black.png",
+        "image_dark": "static/RocketPy_Logo_white.png",
+    },
+    "navigation_with_keys": False,
+    "collapse_navigation": True,
+    "github_url": "https://github.com/RocketPy-Team/RocketPy",
+    "navbar_end": ["theme-switcher", "navbar-icon-links.html"],
+    "icon_links": [
+        {
+            "name": "LinkedIn",
+            "url": "https://www.linkedin.com/company/rocketpy/",
+            "icon": "fa-brands fa-linkedin",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/rocketpy/",
+            "icon": "fa-solid fa-box",
+            "type": "fontawesome",
+        },
+    ],
+}
 html_use_modindex = True
 html_copy_source = False
 html_domain_indices = False
 html_file_suffix = ".html"
 
 htmlhelp_basename = "rocketpy"
+
+
+def setup(app):
+    """Sphinx entry point for optional build-time customizations."""
+    if skip_jupyter_execute:
+        from docutils.parsers.rst import directives
+        from sphinx.directives.code import CodeBlock
+
+        class StaticJupyterExecute(CodeBlock):
+            """Render ``jupyter-execute`` as a non-executing Python code block.
+
+            Accepts (and ignores) the ``jupyter-execute`` directive options so
+            existing pages parse unchanged, but produces a plain highlighted
+            code block instead of a live-executed cell.
+            """
+
+            required_arguments = 0
+            optional_arguments = 1
+            option_spec = dict(CodeBlock.option_spec)
+            option_spec.update(
+                {
+                    "hide-code": directives.flag,
+                    "hide-output": directives.flag,
+                    "code-below": directives.flag,
+                    "stderr": directives.flag,
+                    "raises": directives.unchanged,
+                }
+            )
+
+            def run(self):
+                for key in (
+                    "hide-code",
+                    "hide-output",
+                    "code-below",
+                    "stderr",
+                    "raises",
+                ):
+                    self.options.pop(key, None)
+                if not self.arguments:
+                    self.arguments = ["python3"]
+                return super().run()
+
+        app.add_directive("jupyter-execute", StaticJupyterExecute, override=True)
