@@ -1,11 +1,11 @@
+Installation & Requirements
+===========================
+
 Installation
-============
-
-Here you will learn all of the useful ways you can install RocketPy.
-
+------------
 
 Quick Install Using ``pip``
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To get a copy of RocketPy's latest stable version using ``pip``, just open up your terminal and run:
 
@@ -19,11 +19,11 @@ If you want to choose a specific version to guarantee compatibility, you may ins
 
 .. code-block:: shell
 
-    pip install rocketpy==0.11.0
+    pip install rocketpy==1.13.0
 
 
 Optional Installation Method: ``conda``
----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Alternatively, RocketPy can also be installed using ``conda`` and the `Conda-Forge <https://conda-forge.org/>`_ channel.
 Just open your Anaconda terminal and run:
@@ -34,22 +34,22 @@ Just open your Anaconda terminal and run:
 
 
 Optional Installation Method: from source
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you wish to downloaded RocketPy from source, you may do so either by:
+If you wish to download RocketPy from source, you may do so either by:
 
-- Downloading it from `RocketPy's GitHub <https://github.com/Projeto-Jupiter/RocketPy>`_ page and unzipping the downloaded folder.
+- Downloading it from `RocketPy's GitHub <https://github.com/RocketPy-Team/RocketPy>`_ page and unzipping the downloaded folder.
 - Or cloning it to a desired directory using git:
 
 .. code-block:: shell
 
-    git clone https://github.com/giovaniceotto/RocketPy.git
+    git clone https://github.com/RocketPy-Team/RocketPy.git
 
 Once you are done downloading/cloning RocketPy's repository, you can install it by opening up a terminal inside the repository's folder on your computer and running:
 
 .. code-block:: shell
 
-    python setup.py install 
+    python -m pip install .
 
 
 Development version
@@ -66,7 +66,7 @@ Just open up your terminal and run:
 
 .. code-block:: shell
 
-    pip install git+https://github.com/Projeto-Jupiter/RocketPy.git@develop
+    pip install git+https://github.com/RocketPy-Team/RocketPy.git@develop
 
 
 Cloning RocketPy's Repo
@@ -76,6 +76,116 @@ Alternatively, you can clone RocketPy's repository, check out the branch named `
 
 .. code-block:: shell
 
-    python setup.py install 
+    python -m pip install -e .
 
 
+Requirements
+------------
+
+Python Version
+^^^^^^^^^^^^^^
+
+RocketPy supports Python 3.10 and above.
+Sorry, there are currently no plans to support earlier versions.
+If you really need to run RocketPy on Python 3.8 or earlier, feel free to submit an issue and we will see what we can do!
+
+Required Packages
+^^^^^^^^^^^^^^^^^
+
+The following packages are needed in order to run RocketPy:
+
+- requests
+- Numpy >= 1.13
+- Scipy >= 1.0
+- Matplotlib >= 3.0
+- netCDF4 >= 1.6.4
+- windrose >= 1.6.8
+- requests
+- pytz
+- simplekml
+
+All of these packages, are automatically installed when RocketPy is installed using either ``pip`` or ``conda``.
+However, in case the user wants to install these packages manually, they can do so by following the instructions bellow.
+
+Installing Required Packages Using ``pip``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The packages needed can be installed via ``pip`` by running the following lines of code in your preferred terminal, assuming pip is added to the PATH:
+
+.. code-block:: shell
+
+    pip install "numpy>=1.13"
+    pip install "scipy>=1.0"
+    pip install "matplotlib>=3.0"
+    pip install "netCDF4>=1.6.4"
+    pip install requests
+    pip install pytz
+    pip install simplekml
+
+Installing Required Packages Using ``conda``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Numpy, Scipy, Matplotlib and requests come with Anaconda, but Scipy might need updating.
+The nedCDF4 package can be installed if there is interest in importing weather data from netCDF files.
+To update Scipy and install netCDF4 using Conda, the following code is used:
+
+.. code-block:: shell
+
+    conda install "scipy>=1.0"
+    conda install -c anaconda "netcdf4>=1.6.4"
+
+
+Optional Packages
+^^^^^^^^^^^^^^^^^
+
+RocketPy has several optional feature sets that can be installed individually.
+
+**Environment Analysis** — extra plots and tools for the
+:class:`rocketpy.EnvironmentAnalysis` class:
+
+- `timezonefinder` : automatic timezone detection
+- `windrose` : windrose plots
+- `ipywidgets` : GIF generation
+- `jsonpickle` : saving and loading class instances
+
+.. code-block:: shell
+
+    pip install rocketpy[env_analysis]
+
+**3D Flight Animation** — interactive 3D animations of rocket trajectory and
+attitude using `PyVista <https://pyvista.org/>`_ (a desktop environment is
+recommended):
+
+.. code-block:: shell
+
+    pip install rocketpy[animation]
+
+Once installed, you can render animations from a :class:`rocketpy.Flight` object:
+
+.. code-block:: python
+
+    # Animate rocket moving through 3D space
+    flight.plots.animate_trajectory(start=0, stop=flight.t_final, time_step=0.05)
+
+    # Animate attitude changes only (rocket stays centred)
+    flight.plots.animate_rotate(start=0, stop=flight.t_final, time_step=0.05)
+
+See :ref:`flightusage` for full details and parameter descriptions.
+
+**All extras** — install every optional dependency at once:
+
+.. code-block:: shell
+
+    pip install rocketpy[all]
+
+
+Useful Packages
+^^^^^^^^^^^^^^^
+
+Although `Jupyter Notebooks <http://jupyter.org/>`_ are by no means required to run RocketPy, they can be a handy tool!
+All of are examples are written using Jupyter Notebooks so that you can follow along easily.
+They already come with Anaconda builds, but can also be installed separately using pip:
+
+.. code-block:: shell
+
+    pip install jupyter
